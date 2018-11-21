@@ -1,0 +1,19 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Deny",
+            "Action": [
+                "ec2:DeleteSubnet",
+                "ec2:CreateDefaultVpc",
+                "ec2:CreateDefaultSubnet",
+                "ec2:CreateNatGateway",
+                "ec2:CreateVpc",
+                "ec2:DeleteNatGateway",
+                "ec2:DeleteVpc",
+                "ec2:CreateSubnet"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
