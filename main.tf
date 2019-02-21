@@ -1,8 +1,15 @@
-resource "aws_iam_policy" "policy" {
-  name        = "deny_network_changes"
-  path        = "/"
-  description = "prevents unauthorized network changes"
-
-  policy = "${file("./policies/deny_network_changes.json")}"
+terraform {
+    backend "s3" {
+        bucket = "<BUCKET NAME HERE>"
+        key = "main"
+        region = "us-east-4"
+        profile = "default"
+    }
 }
-# Can use templates to interpolate resource specific arns
+
+module "deny_networking" {
+    source = "./modules/accounts"
+    name = "deny_networking"
+    desciption = "Prevents unauthorized changes to network configuration"
+    policy = "deny_network_changes.json"
+}
