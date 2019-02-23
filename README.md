@@ -1,6 +1,6 @@
-## Terraforming IAM Policies, Groups, and Roles
+# Terraforming IAM Policies, Groups, and Roles
 
-One of the challenges of cloud governace in the hub and spoke model is ensuring consistantcy of rights across all environments. Like all cloud infrastructure, there are a number of tools for managing infrastructure as code. This framework allows users to manage access using Terraform. For more information about Terraform, see the docs[https://terraform.com/docs]. 
+One of the challenges of cloud governace in the hub and spoke model is ensuring consistantcy of rights across all environments. Like all cloud infrastructure, there are a number of tools for managing infrastructure as code. This framework allows users to manage access using Terraform. For more information about Terraform, see the TODO docs[https://terraform.com/docs]. 
 Using nested modules, this framework calls for the creation of the same IAM resources in multiple AWS accounts. 
 
 ### Adding an account
@@ -31,7 +31,33 @@ module "<NAME OF POLICY>" {
 ```
 Replace the name and description. Run `terraform apply`. The command should create a resouce for each account listed.
 
+### Creating a Role/Group
+
+In many environments, SAML-based federated access is how users authenticated into the AWS Console. However, AWS does not have a mechanism to support CLI authentication in a SAML/Active Directory federation scheme. Therefore, creating groups and roles with identical policies ensure that user keys and console permissions will be identitical. 
+Because of the limitations of Terraform (see conclusion), each role/group must have its own directory in `/modules/roles`. The role directory should look like this:
+```
+<ROLE NAME>
+    - role
+        - role.tf
+        - variables.tf
+    - accounts.tf
+    - variables.tf
+```
+
+The `accounts.tf` should list all accounts in the envornment. See 'Adding an Account' above. The `role/role.tf` will need to be updated. Ensure that the role is configured to the SAML provider correctly- the specific configuration will vary by implementation, and is out of scope. A boilerplate is included in the example developer role. 
+Ensure that a TODO `group policy attachment` and a `role policy attachement` resource is created for each policy to be attached to the role/group. Note that policies managed by AWS will have `aws` in the ARN. For custom policies, use the `data.aws_caller_identity.current` resource. This resource is compliled into the account number where the policy is deployed.
+Finally, add a module to the `main.tf` like so:
+```
+module "<ROLE NAME>" {
+    source = "./modules/roles/<ROLE NAME>"
+    name = "<ROLE NAME>"
+    desciption = "<ROLE DESCRIPTION>"
+    policies = "[COMMA SEPARATED LIST OF POLICIES]"
+}
+```
+Any policies that are managed by this framework should be referenced by calling the module like so: `module.<POLICY NAME>.name`. Calling it by name can lead to compile time errors. 
+
 ### Conclusion
-terraform vs cf vs boto3
+This framework was writtern for Terraform over Cloudformation.
 
 # TODO add ex for e2 -> bucket
