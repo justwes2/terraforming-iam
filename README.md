@@ -1,6 +1,6 @@
 # Terraforming IAM Policies, Groups, and Roles
 
-One of the challenges of cloud governace in the hub and spoke model is ensuring consistantcy of rights across all environments. Like all cloud infrastructure, there are a number of tools for managing infrastructure as code. This framework allows users to manage access using Terraform. For more information about Terraform, see the TODO docs[https://terraform.com/docs]. 
+One of the challenges of cloud governace in the hub and spoke model is ensuring consistantcy of rights across all environments. Like all cloud infrastructure, there are a number of tools for managing infrastructure as code. This framework allows users to manage access using Terraform. For more information about Terraform, see the [docs](https://www.terraform.io/docs/index.html). 
 Using nested modules, this framework calls for the creation of the same IAM resources in multiple AWS accounts. 
 
 ### Adding an account
@@ -57,7 +57,9 @@ module "<ROLE NAME>" {
 ```
 Any policies that are managed by this framework should be referenced by calling the module like so: `module.<POLICY NAME>.name`. Calling it by name can lead to compile time errors. 
 
-### Conclusion
-This framework was writtern for Terraform over Cloudformation.
+### EC2 Role
+There is a role `bucket_access_role` listed as well. This creates a role which can be attached to an ec2 instanct that allows access to the contents of the S3 bucket specificed in the policy. Note that the `aws_iam_instance_profile` needs to be created to allow the role to be attached. 
 
-# TODO add ex for e2 -> bucket
+### Conclusion
+The advantages of Infrastructrue as Code (Repeatablity, Transparency, Auditablity) are just as applicable to Identity and Access Managment as to more traditonally defined infrastructure (compute, networking, storage). This framework was writtern for Terraform over Cloudformation. In a multi-cloud organization, a cloud agnositic tool like terraform can reduce complexity over a CSP specific tool like Cloudformation. 
+
